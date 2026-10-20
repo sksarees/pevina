@@ -1,0 +1,462 @@
+Done bro 👍 Ipo **Search la oru digit type panna → andha digit irukra ELLA cell-um highlight aagum** + keezha **result list** la edhula ellam irukku nu ellam kaatum. **Match Only** button vacha matching cells mattum highlight-a theriyum. Edit & Save (Local Storage) adhe madhiri work aagum ✅
+
+**Pudhusa:**
+- 🔎 `2` type panna → `245, 127, 520, 828...` ella cell-il ulla **2 digit red-a highlight** aagum
+- 📋 Keezha **result chips**: `D1 Feb: 245` madhiri — tap panna andha cell-ku auto scroll aagum
+- 🎯 **Match Only** toggle → matching cells mattum clear-a theriyum, matha ellam dim aagum
+- 💾 Edit Mode + Single digit edit + colour + Local Storage save ellam same
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kerala Lottery Chart Yearly 2025 & 2026 - Chart with Saleem</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:8px;font-family:Arial,Helvetica,sans-serif;background:#f4eef9}
+.topbar{background:linear-gradient(180deg,#dccaf0,#c3a6e4);border-radius:10px;padding:10px 6px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.topbar h1{margin:0;color:#c0392b;font-size:clamp(16px,4.6vw,30px)}
+.topbar h2{margin:3px 0 0;color:#a93226;font-size:clamp(14px,4vw,26px)}
+.controls,.controls2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:10px 0 4px}
+.searchbox{position:relative;flex:1 1 200px;max-width:320px}
+#q{width:100%;padding:10px 36px 10px 12px;border:2px solid #9b59b6;border-radius:8px;font-size:16px;outline:none}
+#q:focus{border-color:#c0392b;box-shadow:0 0 6px rgba(192,57,43,.45)}
+#clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:#9b59b6;color:#fff;width:25px;height:25px;border-radius:50%;cursor:pointer;display:none}
+#count{font-weight:bold;color:#c0392b;font-size:14px;min-width:92px;text-align:center}
+.ybtns{display:flex;gap:6px}
+.ybtns button,.toolbtn{padding:8px 12px;border:2px solid #9b59b6;background:#fff;color:#6c3483;font-weight:bold;border-radius:8px;cursor:pointer;font-size:13px}
+.ybtns button.active,.toolbtn.on{background:#8e44ad;border-color:#8e44ad;color:#fff}
+.toolbtn.danger{border-color:#c0392b;color:#c0392b}
+.hint{text-align:center;font-size:12px;color:#7d3c98;margin:0 0 8px;line-height:1.5}
+
+/* Result chips list */
+#resultList{display:none;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px auto;max-width:900px;max-height:110px;overflow:auto;padding:4px}
+.rchip{padding:5px 10px;background:#fff;border:1.5px solid #9b59b6;color:#6c3483;border-radius:14px;font-size:12px;font-weight:bold;cursor:pointer}
+.rchip:active{background:#8e44ad;color:#fff}
+.noress{color:#c0392b;font-weight:bold;font-size:13px}
+
+.tablewrap{overflow:auto;max-height:70vh;border:2px solid #b48ed6;border-radius:10px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+::-webkit-scrollbar{height:10px;width:10px}::-webkit-scrollbar-thumb{background:#b48ed6;border-radius:6px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:840px;font-size:clamp(10px,2.5vw,15px)}
+body[data-year="25"] table,body[data-year="26"] table{min-width:520px}
+th,td{border-right:1px solid #ddccef;border-bottom:1px solid #ddccef;padding:3px 2px;text-align:center;white-space:nowrap}
+thead th{position:sticky;z-index:20;background:#ead9f6;color:#a93226;font-weight:bold;height:28px}
+thead tr.yr th{top:0;background:#c3a6e4;color:#fff;font-size:1.05em;letter-spacing:1px}
+thead tr.mh th{top:28px}
+th.date{top:0;left:0;z-index:30;background:#e6d6f5;color:#6c3483}
+td.date{position:sticky;left:0;z-index:10;background:#f1e8f9;font-weight:bold;color:#7d3c98;width:42px;min-width:42px}
+td.num{cursor:pointer;transition:opacity .2s}
+td.num span{pointer-events:none}
+tbody tr:nth-child(even) td.num{background:#fbf7fe}
+td.na{color:#c0392b;font-weight:bold;background:#fdefed!important}
+td.empty{background:#f2f2f2}
+td.sep,th.sep{border-right:3px solid #8e44ad!important}
+td.edited{background:#fff3cd!important;box-shadow:inset 0 0 0 2px #f39c12}
+td.match{background:#ffe066!important;box-shadow:inset 0 0 0 2px #e67e22}
+td.num span.hl{background:#e74c3c!important;color:#fff!important;border-radius:3px;padding:0 1px}
+td.flash{animation:flash 1.5s ease}
+@keyframes flash{0%,100%{box-shadow:inset 0 0 0 0 transparent}25%,65%{box-shadow:inset 0 0 0 3px #27ae60}}
+
+/* Match Only mode */
+body.focus-on td.num:not(.match),body.focus-on td.na,body.focus-on td.empty{opacity:.13}
+body.focus-on td.date{opacity:.55}
+
+body.edit-on td.num,body.edit-on td.empty{outline:1px dashed #8e44ad;outline-offset:-3px;cursor:cell}
+body[data-year="25"] th.g26,body[data-year="25"] th.h26,body[data-year="25"] td[data-y="26"]{display:none}
+body[data-year="26"] th.g25,body[data-year="26"] th.h25,body[data-year="26"] td[data-y="25"]{display:none}
+
+/* Editor Modal */
+#editorOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:12px}
+#editorOverlay.open{display:flex}
+.editor{background:#fff;border-radius:14px;width:100%;max-width:390px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.editor h3{margin:0;text-align:center;color:#6c3483;font-size:17px}
+.esub{text-align:center;font-size:12px;color:#888;margin:5px 0 0}
+.digits{display:flex;gap:10px;justify-content:center;margin:14px 0 10px}
+.dbox{flex:1;text-align:center;background:#f8f1ff;padding:8px 4px;border-radius:10px;border:1px solid #ddccef}
+.dbox label{display:block;font-size:11px;color:#7d3c98;font-weight:bold;margin-bottom:5px}
+.dbox input{width:46px;height:54px;font-size:32px;text-align:center;font-weight:bold;border:2px solid #9b59b6;border-radius:8px;outline:none;color:#111}
+.dbox input:focus{border-color:#c0392b;box-shadow:0 0 6px rgba(192,57,43,.4)}
+.palette{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px;min-height:22px}
+.cbtn{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;padding:0}
+.cbtn.sel{box-shadow:0 0 0 2px #000;transform:scale(1.18)}
+.erow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.erow button{padding:7px 10px;border:1px solid #9b59b6;background:#fff;color:#6c3483;border-radius:7px;cursor:pointer;font-size:12px;font-weight:bold}
+.eactions{display:flex;gap:8px;margin-top:10px}
+.eactions button{flex:1;padding:11px;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer}
+#cancelBtn{background:#eee;color:#333}
+#saveBtn{background:#27ae60;color:#fff}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:#27ae60;color:#fff;padding:10px 18px;border-radius:25px;font-weight:bold;font-size:14px;z-index:1000;transition:transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.3);white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body data-year="both">
+
+<div class="topbar">
+  <h1>Keralalottery Chart Yearly - 2025 &amp; 2026</h1>
+  <h2>CHART WITH SALEEM</h2>
+</div>
+
+<div class="controls">
+  <div class="searchbox">
+    <input id="q" type="text" inputmode="numeric" placeholder="Search (e.g. 2 → ella 2-um)" autocomplete="off">
+    <button id="clear" title="Clear">✕</button>
+  </div>
+  <div class="ybtns">
+    <button data-y="25">2025</button>
+    <button data-y="26">2026</button>
+    <button data-y="both" class="active">Both</button>
+  </div>
+  <span id="count"></span>
+</div>
+
+<div class="controls2">
+  <button id="editToggle" class="toolbtn">✏️ Edit Mode: OFF</button>
+  <button id="focusBtn" class="toolbtn">🎯 Match Only: OFF</button>
+  <button id="resetAll" class="toolbtn danger">🗑 Reset Saved</button>
+</div>
+
+<p class="hint" id="hint">🔎 Digit type pannunga → andha digit irukra ella cell-um highlight + keezha list-la edhu endha column nu theriyum | Cell tap = auto search</p>
+
+<div id="resultList"></div>
+
+<div class="tablewrap">
+<table>
+  <thead>
+    <tr class="yr">
+      <th class="date" rowspan="2">Date</th>
+      <th colspan="12" class="g25 sep">2025</th>
+      <th colspan="10" class="g26">2026</th>
+    </tr>
+    <tr class="mh" id="mh"></tr>
+  </thead>
+  <tbody id="tb"></tbody>
+</table>
+</div>
+
+<!-- Single Digit Editor -->
+<div id="editorOverlay">
+  <div class="editor">
+    <h3 id="editTitle">Edit</h3>
+    <p class="esub">Venuna digit-a mattum change pannunga, keezha andha digit-oda colour-a select pannunga</p>
+    <div class="digits">
+      <div class="dbox"><label>1st DIGIT</label><input id="d0" maxlength="1" inputmode="numeric"><div class="palette" data-i="0"></div></div>
+      <div class="dbox"><label>2nd DIGIT</label><input id="d1" maxlength="1" inputmode="numeric"><div class="palette" data-i="1"></div></div>
+      <div class="dbox"><label>3rd DIGIT</label><input id="d2" maxlength="1" inputmode="numeric"><div class="palette" data-i="2"></div></div>
+    </div>
+    <div class="erow">
+      <button id="makeStarBtn">*** Veikkalam</button>
+      <button id="clearColorBtn">Colour Clear</button>
+      <button id="resetCellBtn">Original Reset</button>
+    </div>
+    <div class="eactions">
+      <button id="cancelBtn">Cancel</button>
+      <button id="saveBtn">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast">Saved ✓</div>
+
+<script>
+const M25=["Jan","Feb","Mar","Apr","May","June","July","Agus","Sept","Octo","Nov","Dec"];
+const M26=["Jan","Feb","Mar","Apr","May","June","July","Agus","Sept","Octo"];
+
+const D=[
+["675","245","127","124","***","061","441","226","510","922","735","060","592","890","789","443","***","771","487","228","288","174"],
+["048","478","976","***","828","290","667","014","763","***","239","255","825","983","692","980","104","349","530","482","768","***"],
+["858","866","804","148","430","650","114","584","551","274","930","212","167","988","596","805","536","191","511","622","280","755"],
+["521","092","979","211","012","715","657","177","829","617","612","929","820","235","794","220","419","010","721","975","763","055"],
+["995","***","564","155","505","017","227","702","***","170","067","537","510","206","885","518","230","609","496","334","700","602"],
+["188","299","432","907","215","796","046","735","265","437","772","669","345","873","844","637","428","627","028","769","248","487"],
+["404","137","821","430","735","909","119","922","851","693","919","925","817","719","791","778","438","787","060","887","140","405"],
+["156","484","145","420","442","348","140","405","272","424","880","880","439","063","184","496","123","224","478","199","599","247"],
+["854","600","255","122","320","044","124","294","745","475","740","019","735","927","299","***","574","081","287","935","236","995"],
+["727","168","581","809","629","246","766","995","756","228","253","327","494","712","420","618","016","572","068","322","269","414"],
+["793","612","245","935","535","932","561","988","650","767","938","262","464","510","799","447","041","427","888","348","822","469"],
+["639","282","864","330","939","804","007","367","773","935","897","995","024","001","349","901","927","668","134","327","269","924"],
+["998","480","501","096","746","021","492","900","961","935","584","146","699","665","875","456","883","613","430","878","979","957"],
+["769","398","448","974","860","311","046","002","709","740","630","682","910","462","383","849","834","347","649","587","635","350"],
+["116","997","123","120","523","727","278","***","688","458","500","465","503","330","603","830","074","243","202","***","460","881"],
+["929","876","089","460","610","153","280","643","727","987","829","494","002","307","697","807","929","126","687","836","215","595"],
+["570","768","533","400","615","927","696","960","753","913","402","502","745","985","202","730","965","857","370","325","207","965"],
+["474","890","071","752","420","080","706","851","716","982","832","601","421","210","315","784","952","786","***","860","384","707"],
+["750","155","920","770","755","814","817","148","677","692","503","486","628","815","264","155","861","411","925","866","700","385"],
+["416","237","356","919","753","790","440","976","616","282","453","563","137","689","453","563","005","351","778","430","572"],
+["509","610","649","120","208","197","337","057","028","137","370","869","145","293","280","845","080","074","699","695","205"],
+["270","869","545","505","617","706","887","957","775","451","***","275","141","268","808","400","786","203","225","168","712"],
+["460","562","158","226","439","241","***","432","144","160","190","173","044","940","785","654","***","122","404","315","561"],
+["275","496","016","522","411","464","455","923","960","220","769","869","***","647","618","038","040","547","527","405","457"],
+["254","575","137","962","048","015","789","084","879","200","846","785","525","865","725","625","839","064","108","999","226"],
+["***","431","230","499","956","920","960","939","907","690","744","954","***","286","185","672","465","248","014","***","***"],
+["705","063","621","570","134","932","045","184","***","969","954","429","507","862","057","038","197","230","773","327","441"],
+["554","991","941","640","***","518","412","059","167","782","048","887","882","913","***","851","435","044","550","799","615"],
+["982","***","046","423","249","666","998","032","175","613","733","235","805","***","635","449","785","446","928","899","775"],
+["857","***","035","900","948","974","376","229","622","206","122","592","473","***","710","857","057","013","644","593","476"],
+["374","***","845","***","655","***","597","462","***","867","***","610","477","***","508","***","862","***","727","013","***"]
+];
+
+/* ---------- Local Storage ---------- */
+const STORAGE_KEY='chartWithSaleemEdits_v1';
+let edits={};
+try{ edits=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ edits={}; }
+function saveEdits(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(edits)); }catch(e){}
+  updateResetLabel();
+}
+function updateResetLabel(){
+  const n=Object.keys(edits).length;
+  document.getElementById('resetAll').textContent = n ? `🗑 Reset Saved (${n})` : '🗑 Reset Saved';
+}
+
+/* ---------- Build Table ---------- */
+const mh=document.getElementById('mh');
+M25.forEach(m=>mh.insertAdjacentHTML('beforeend',`<th class="h25${m==='Dec'?' sep':''}">${m}</th>`));
+M26.forEach(m=>mh.insertAdjacentHTML('beforeend',`<th class="h26">${m}</th>`));
+const tb=document.getElementById('tb');
+let cells=[];
+
+function getCellData(r,c){
+  const e=edits[r+'-'+c];
+  if(e) return {v:e.v, c:e.c||[null,null,null], edited:true};
+  return {v:(D[r][c]!==undefined?D[r][c]:''), c:[null,null,null], edited:false};
+}
+function cellInner(v,colors){
+  if(v==='***'||v==='') return v;
+  return v.split('').map((ch,i)=> colors[i]
+    ? `<span style="color:${colors[i]};font-weight:bold">${ch}</span>`
+    : `<span>${ch}</span>`).join('');
+}
+function buildTable(){
+  let h='';
+  D.forEach((row,i)=>{
+    h+=`<tr><td class="date">${i+1}</td>`;
+    for(let j=0;j<22;j++){
+      const {v,c,edited}=getCellData(i,j);
+      const y=j<12?25:26, sep=j===11?' sep':'', ed=edited?' edited':'';
+      if(v==="")        h+=`<td class="empty${sep}" data-y="${y}" data-r="${i}" data-c="${j}"></td>`;
+      else if(v==="***")h+=`<td class="num na${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">***</td>`;
+      else              h+=`<td class="num${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">${cellInner(v,c)}</td>`;
+    }
+    h+='</tr>';
+  });
+  tb.innerHTML=h;
+  cells=[...tb.querySelectorAll('td.num')];
+  updateResetLabel();
+}
+buildTable();
+
+/* ---------- Smart Search (partial digit match) ---------- */
+const q=document.getElementById('q'), clr=document.getElementById('clear'),
+      cnt=document.getElementById('count'), resultList=document.getElementById('resultList');
+let matches=[];
+
+function monthLabel(c){
+  return c<12 ? M25[c]+" '25" : M26[c-12]+" '26";
+}
+function doSearch(){
+  const raw=q.value.replace(/\D/g,'');
+  clr.style.display=raw?'block':'none';
+  /* clear old */
+  matches=[];
+  cells.forEach(td=>{
+    td.classList.remove('match','flash');
+    td.querySelectorAll('span.hl').forEach(s=>s.classList.remove('hl'));
+  });
+  if(!raw){
+    cnt.textContent='';
+    renderResults();
+    return;
+  }
+  let first=null;
+  cells.forEach(td=>{
+    const v=td.textContent.trim();
+    if(!v||v==='***') return;
+    let idx=-1;
+    if(raw.length>=3){ if(v===raw.padStart(3,'0')) idx=0; }   /* full number exact */
+    else idx=v.indexOf(raw);                                   /* partial digit     */
+    if(idx<0) return;
+    if(td.offsetParent===null) return;                         /* year filter hidden */
+    td.classList.add('match');
+    const spans=td.querySelectorAll('span');
+    for(let k=idx; k<idx+raw.length && k<spans.length; k++) spans[k].classList.add('hl');
+    if(!first) first=td;
+    matches.push({r:+td.dataset.r, c:+td.dataset.c, v});
+  });
+  cnt.textContent = matches.length ? matches.length+' found' : 'No match';
+  renderResults();
+  if(first) setTimeout(()=>first.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),60);
+}
+function renderResults(){
+  if(!q.value.replace(/\D/g,'')){ resultList.style.display='none'; resultList.innerHTML=''; return; }
+  resultList.style.display='flex';
+  resultList.innerHTML = matches.length
+    ? matches.map(m=>`<button class="rchip" data-r="${m.r}" data-c="${m.c}">D${m.r+1} • ${monthLabel(m.c)} : ${m.v}</button>`).join('')
+    : '<span class="noress">No match 😕</span>';
+}
+resultList.addEventListener('click',e=>{
+  const b=e.target.closest('.rchip'); if(!b) return;
+  const td=tb.querySelector(`td[data-r="${b.dataset.r}"][data-c="${b.dataset.c}"]`);
+  if(!td) return;
+  td.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+  td.classList.add('flash'); setTimeout(()=>td.classList.remove('flash'),1500);
+});
+q.addEventListener('input', doSearch);
+clr.addEventListener('click', ()=>{ q.value=''; doSearch(); q.focus(); });
+
+/* Match Only mode */
+const focusBtn=document.getElementById('focusBtn');
+let focusMode=false;
+focusBtn.addEventListener('click',()=>{
+  if(!q.value.replace(/\D/g,'')){ showToast('Search la number type pannunga first'); return; }
+  focusMode=!focusMode;
+  document.body.classList.toggle('focus-on',focusMode);
+  focusBtn.textContent='🎯 Match Only: '+(focusMode?'ON':'OFF');
+  focusBtn.classList.toggle('on',focusMode);
+});
+
+/* Year filter */
+document.querySelectorAll('.ybtns button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.ybtns button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.body.dataset.year=b.dataset.y;
+    doSearch();
+  });
+});
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ---------- Single Digit Editor ---------- */
+const COLORS=["#111111","#e74c3c","#27ae60","#2980b9","#8e44ad","#e67e22","#d81b60"];
+let editMode=false, curR=-1, curC=-1, selColors=[null,null,null];
+const overlay=document.getElementById('editorOverlay');
+const inputs=[0,1,2].map(i=>document.getElementById('d'+i));
+
+document.querySelectorAll('.palette').forEach(p=>{
+  const idx=+p.dataset.i;
+  COLORS.forEach(col=>{
+    const b=document.createElement('button');
+    b.className='cbtn'; b.style.background=col; b.dataset.color=col; b.type='button';
+    b.addEventListener('click', ()=>{ selColors[idx]=col; syncDigitUI(); });
+    p.appendChild(b);
+  });
+});
+function syncDigitUI(){
+  for(let i=0;i<3;i++){
+    inputs[i].style.color = selColors[i] || '#111';
+    document.querySelectorAll(`.palette[data-i="${i}"] .cbtn`)
+      .forEach(b=>b.classList.toggle('sel', b.dataset.color===selColors[i]));
+  }
+}
+inputs.forEach((inp,i)=>{
+  inp.addEventListener('input', ()=>{
+    inp.value = inp.value.slice(-1);
+    if(inp.value && i<2) inputs[i+1].focus();
+  });
+  inp.addEventListener('keydown', e=>{
+    if(e.key==='Backspace' && !inp.value && i>0) inputs[i-1].focus();
+  });
+});
+function openEditor(r,c,focusIdx){
+  curR=r; curC=c;
+  const {v,c:colors}=getCellData(r,c);
+  document.getElementById('editTitle').textContent=`✏️ Date ${r+1} - ${monthLabel(c)}`;
+  const vals = v==='***' ? ['*','*','*'] : (v==='' ? ['','',''] : v.split(''));
+  selColors=[...colors];
+  for(let i=0;i<3;i++) inputs[i].value = vals[i]||'';
+  syncDigitUI();
+  overlay.classList.add('open');
+  setTimeout(()=>{ const f=inputs[focusIdx||0]; f.focus(); f.select(); },80);
+}
+function closeEditor(){ overlay.classList.remove('open'); }
+
+tb.addEventListener('click', e=>{
+  const td=e.target.closest('td');
+  if(!td || td.dataset.r===undefined) return;
+  if(editMode){
+    const spans=[...td.querySelectorAll('span')];
+    const fi=spans.indexOf(e.target);
+    openEditor(+td.dataset.r, +td.dataset.c, fi<0?0:fi);
+    return;
+  }
+  if(td.classList.contains('num') && !td.classList.contains('na')){
+    q.value=td.textContent.trim(); doSearch();
+  }
+});
+
+const editToggle=document.getElementById('editToggle'), hint=document.getElementById('hint');
+const hintNormal=hint.textContent;
+editToggle.addEventListener('click', ()=>{
+  editMode=!editMode;
+  document.body.classList.toggle('edit-on', editMode);
+  editToggle.textContent = editMode ? '✏️ Edit Mode: ON' : '✏️ Edit Mode: OFF';
+  editToggle.classList.toggle('on', editMode);
+  hint.textContent = editMode
+    ? '✏️ Edit Mode ON: Cell tap pannunga → digit / colour change panni Save (orange border = edited)'
+    : hintNormal;
+});
+
+/* Editor buttons */
+document.getElementById('makeStarBtn').addEventListener('click', ()=>{
+  inputs.forEach(i=>i.value='*'); selColors=[null,null,null]; syncDigitUI();
+});
+document.getElementById('clearColorBtn').addEventListener('click', ()=>{
+  selColors=[null,null,null]; syncDigitUI();
+});
+document.getElementById('resetCellBtn').addEventListener('click', ()=>{
+  delete edits[curR+'-'+curC];
+  saveEdits(); buildTable(); doSearch(); closeEditor();
+  showToast('Original restore aachu ✓');
+});
+document.getElementById('cancelBtn').addEventListener('click', closeEditor);
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeEditor(); });
+
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+  const vals=inputs.map(i=>i.value.trim());
+  let newVal;
+  if(vals.every(v=>v==='*')){
+    newVal='***'; selColors=[null,null,null];
+  } else if(vals.every(v=>/^\d$/.test(v))){
+    newVal=vals.join('');
+  } else {
+    alert('Bro, 3 digit-um fill pannunga, illana *** button use pannunga'); return;
+  }
+  const key=curR+'-'+curC;
+  const original = D[curR][curC]!==undefined ? D[curR][curC] : '';
+  if(newVal===original && selColors.every(c=>!c)) delete edits[key];
+  else edits[key]={v:newVal, c:[...selColors]};
+  saveEdits();
+  buildTable(); doSearch(); closeEditor();
+  showToast('Saved ✓ Local Storage-la save aachu');
+});
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  if(!Object.keys(edits).length){ showToast('Saved edit edhuvum illa'); return; }
+  if(!confirm('Save panna ella edit-um delete aagidum. Confirm-a?')) return;
+  edits={};
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  buildTable(); doSearch(); updateResetLabel();
+  showToast('Ella edit-um reset aachu ✓');
+});
+</script>
+</body>
+</html>
+```
+
+**Epdi use pannurathu:**
+1. Search la `2` nu type panna → **2 irukra ella cell-um** yellow highlight + andha **2 digit red colour** la theriyum (245 la 2, 127 la 2, ellame)
+2. Keezha **result list** la `D5 • Sept '25 : 245` madhiri ella match-um varum — adha tap panna andha cell-ku scroll aagi green flash aagum
+3. **🎯 Match Only: ON** panna → matching cells mattum nalla theriyum, matha cells dim aagum
+4. `61` type panna → `061, 161, 961...` ella number-um; `061` (3 digit) type panna exact match mattum
+5. Edit Mode ON panni cell tap → digit/colour change → **💾 Save** → Local Storage la permanent save ✅
+
+Vera ethavum venum na sollunga bro 👍
