@@ -1,8 +1,11 @@
-Done bro 👍 Ipo **3 feature-um add panniten:**
+Correct bro 👍  
+Ippo **search box-la `2` type panna → chart-la irukkura ella digit `2` highlight aagum + keezha “Search Column: 2” nu separate column/list show aagum.**  
+Andha result list-la **Edit** button press pannina edit pannitu **Local Storage-la save** pannalam.
 
-1.  **Single Digit Edit** - oru digit-a mattum thaniya change pannalam
-2.  **Single Digit Color Change** - ovvoru digit-kum separate colour
-3.  **Local Storage Save** - Save panna, browser close pannittu thirumba open pannalum andha edit apdiye irukkum
+- `2` search → all digit 2 show/highlight  
+- `245` search → exact 245 number search  
+- Result column-la Edit → save localStorage  
+- Digit `2` ku permanent colour save panna option um add pannirukken  
 
 ```html
 <!DOCTYPE html>
@@ -10,48 +13,69 @@ Done bro 👍 Ipo **3 feature-um add panniten:**
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kerala Lottery Chart Yearly 2025 & 2026 - Chart with Saleem</title>
+<title>Kerala Lottery Chart Yearly 2025 & 2026</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;padding:8px;font-family:Arial,Helvetica,sans-serif;background:#f4eef9}
 .topbar{background:linear-gradient(180deg,#dccaf0,#c3a6e4);border-radius:10px;padding:10px 6px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .topbar h1{margin:0;color:#c0392b;font-size:clamp(16px,4.6vw,30px)}
 .topbar h2{margin:3px 0 0;color:#a93226;font-size:clamp(14px,4vw,26px)}
-.controls,.controls2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:10px 0 4px}
+.controls,.controls2,.digitBtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:10px 0 4px}
 .searchbox{position:relative;flex:1 1 200px;max-width:320px}
 #q{width:100%;padding:10px 36px 10px 12px;border:2px solid #9b59b6;border-radius:8px;font-size:16px;outline:none}
 #q:focus{border-color:#c0392b;box-shadow:0 0 6px rgba(192,57,43,.45)}
 #clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:#9b59b6;color:#fff;width:25px;height:25px;border-radius:50%;cursor:pointer;display:none}
-#count{font-weight:bold;color:#c0392b;font-size:14px;min-width:92px;text-align:center}
+#count{font-weight:bold;color:#c0392b;font-size:14px;min-width:120px;text-align:center}
 .ybtns{display:flex;gap:6px}
-.ybtns button,.toolbtn{padding:8px 12px;border:2px solid #9b59b6;background:#fff;color:#6c3483;font-weight:bold;border-radius:8px;cursor:pointer;font-size:13px}
-.ybtns button.active,.toolbtn.on{background:#8e44ad;border-color:#8e44ad;color:#fff}
+.ybtns button,.toolbtn,.digitBtns button{padding:8px 12px;border:2px solid #9b59b6;background:#fff;color:#6c3483;font-weight:bold;border-radius:8px;cursor:pointer;font-size:13px}
+.ybtns button.active,.toolbtn.on,.digitBtns button.active{background:#8e44ad;border-color:#8e44ad;color:#fff}
 .toolbtn.danger{border-color:#c0392b;color:#c0392b}
 .hint{text-align:center;font-size:12px;color:#7d3c98;margin:0 0 8px;line-height:1.5}
-.tablewrap{overflow:auto;max-height:74vh;border:2px solid #b48ed6;border-radius:10px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
-::-webkit-scrollbar{height:10px;width:10px}::-webkit-scrollbar-thumb{background:#b48ed6;border-radius:6px}
-table{border-collapse:separate;border-spacing:0;width:100%;min-width:840px;font-size:clamp(10px,2.5vw,15px)}
-body[data-year="25"] table,body[data-year="26"] table{min-width:520px}
-th,td{border-right:1px solid #ddccef;border-bottom:1px solid #ddccef;padding:3px 2px;text-align:center;white-space:nowrap}
-thead th{position:sticky;z-index:20;background:#ead9f6;color:#a93226;font-weight:bold;height:28px}
-thead tr.yr th{top:0;background:#c3a6e4;color:#fff;font-size:1.05em;letter-spacing:1px}
-thead tr.mh th{top:28px}
-th.date{top:0;left:0;z-index:30;background:#e6d6f5;color:#6c3483}
-td.date{position:sticky;left:0;z-index:10;background:#f1e8f9;font-weight:bold;color:#7d3c98;width:42px;min-width:42px}
-td.num{cursor:pointer}
-td.num span{pointer-events:none}
-tbody tr:nth-child(even) td.num{background:#fbf7fe}
-tbody tr:hover td.num{background:#efe3fb}
-td.na{color:#c0392b;font-weight:bold;background:#fdefed!important}
-td.empty{background:#f2f2f2}
-td.sep,th.sep{border-right:3px solid #8e44ad!important}
-td.edited{background:#fff3cd!important;box-shadow:inset 0 0 0 2px #f39c12}
-td.match{background:#ffe066!important;box-shadow:inset 0 0 0 2px #e67e22;animation:pop .25s ease}
-td.match span{color:#a00202!important;font-weight:bold}
+.tablewrap{overflow:auto;max-height:70vh;border:2px solid #b48ed6;border-radius:10px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+::-webkit-scrollbar{height:10px;width:10px}
+::-webkit-scrollbar-thumb{background:#b48ed6;border-radius:6px}
+
+.chart{border-collapse:separate;border-spacing:0;width:100%;min-width:840px;font-size:clamp(10px,2.5vw,15px)}
+body[data-year="25"] .chart,body[data-year="26"] .chart{min-width:520px}
+.chart th,.chart td{border-right:1px solid #ddccef;border-bottom:1px solid #ddccef;padding:3px 2px;text-align:center;white-space:nowrap}
+.chart thead th{position:sticky;z-index:20;background:#ead9f6;color:#a93226;font-weight:bold;height:28px}
+.chart thead tr.yr th{top:0;background:#c3a6e4;color:#fff;font-size:1.05em;letter-spacing:1px}
+.chart thead tr.mh th{top:28px}
+.chart th.date{top:0;left:0;z-index:30;background:#e6d6f5;color:#6c3483}
+.chart td.date{position:sticky;left:0;z-index:10;background:#f1e8f9;font-weight:bold;color:#7d3c98;width:42px;min-width:42px}
+.chart td.num{cursor:pointer}
+.chart .digit{display:inline-block;min-width:.55em;border-radius:3px}
+.chart tbody tr:nth-child(even) td.num{background:#fbf7fe}
+.chart tbody tr:hover td.num{background:#efe3fb}
+.chart td.na{color:#c0392b;font-weight:bold;background:#fdefed!important}
+.chart td.empty{background:#f2f2f2}
+.chart td.sep,.chart th.sep{border-right:3px solid #8e44ad!important}
+.chart td.edited{background:#fff3cd!important;box-shadow:inset 0 0 0 2px #f39c12}
+.chart td.matchExact{background:#ffe066!important;box-shadow:inset 0 0 0 2px #e67e22;animation:pop .25s ease}
+.chart td.matchExact .digit{color:#a00202!important;font-weight:900}
+.chart td.matchCell{background:#fff8c5!important}
+.chart .digit.digitHit{background:#ffe066!important;color:#a00202!important;font-weight:900;box-shadow:0 0 0 1px #e67e22}
+.chart td.flash{animation:flash .9s ease}
+@keyframes flash{50%{outline:3px solid #e74c3c;background:#d5f5e3!important}}
 @keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.18)}100%{transform:scale(1)}}
-body.edit-on td.num,body.edit-on td.empty{outline:1px dashed #8e44ad;outline-offset:-3px;cursor:cell}
-body[data-year="25"] th.g26,body[data-year="25"] th.h26,body[data-year="25"] td[data-y="26"]{display:none}
-body[data-year="26"] th.g25,body[data-year="26"] th.h25,body[data-year="26"] td[data-y="25"]{display:none}
+body.edit-on .chart td.num,body.edit-on .chart td.empty{outline:1px dashed #8e44ad;outline-offset:-3px;cursor:cell}
+body[data-year="25"] .chart th.g26,body[data-year="25"] .chart th.h26,body[data-year="25"] .chart td[data-y="26"]{display:none}
+body[data-year="26"] .chart th.g25,body[data-year="26"] .chart th.h25,body[data-year="26"] .chart td[data-y="25"]{display:none}
+
+/* Search result column */
+.digitTools{display:none;margin:8px auto;max-width:780px;background:#fff;border:2px solid #b48ed6;border-radius:10px;padding:8px;text-align:center}
+.digitTools.show{display:block}
+.digitTools input{width:45px;height:34px;border:none;background:transparent;vertical-align:middle}
+.digitTools button{padding:7px 10px;margin:3px;border:1px solid #9b59b6;background:#fff;color:#6c3483;border-radius:7px;font-weight:bold;cursor:pointer}
+.results{display:none;margin:8px auto;max-width:780px;background:#fff;border:2px solid #b48ed6;border-radius:10px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.results.show{display:block}
+.results h3{margin:0 0 6px;color:#6c3483;text-align:center;font-size:15px}
+.rwrap{max-height:190px;overflow:auto;border-radius:8px}
+.rtable{width:100%;border-collapse:collapse;font-size:12px}
+.rtable th,.rtable td{border:1px solid #ead9f6;padding:5px;text-align:center;white-space:nowrap}
+.rtable th{background:#ead9f6;color:#a93226;position:sticky;top:0}
+.rtable tr:hover td{background:#fff8c5}
+.miniEdit{padding:4px 8px;border:none;border-radius:6px;background:#27ae60;color:#fff;font-weight:bold;cursor:pointer}
 
 /* Editor Modal */
 #editorOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:12px}
@@ -86,7 +110,7 @@ body[data-year="26"] th.g25,body[data-year="26"] th.h25,body[data-year="26"] td[
 
 <div class="controls">
   <div class="searchbox">
-    <input id="q" type="text" inputmode="numeric" placeholder="Number search (e.g. 061)" autocomplete="off">
+    <input id="q" type="text" inputmode="numeric" maxlength="3" placeholder="Search 2 or 245" autocomplete="off">
     <button id="clear" title="Clear">✕</button>
   </div>
   <div class="ybtns">
@@ -97,15 +121,28 @@ body[data-year="26"] th.g25,body[data-year="26"] th.h25,body[data-year="26"] td[
   <span id="count"></span>
 </div>
 
+<div class="digitBtns" id="digitBtns"></div>
+
 <div class="controls2">
   <button id="editToggle" class="toolbtn">✏️ Edit Mode: OFF</button>
   <button id="resetAll" class="toolbtn danger">🗑 Reset Saved</button>
 </div>
 
-<p class="hint" id="hint">🔎 Number type pannunga → match aana cell highlight aagum | Cell tap panna auto-search</p>
+<div class="digitTools" id="digitTools">
+  <b id="digitToolTitle">Digit Colour</b>
+  <input type="color" id="globalDigitColor" value="#e74c3c">
+  <button id="saveDigitColor">💾 Save Digit Colour</button>
+  <button id="clearDigitColor">Clear Digit Colour</button>
+</div>
+
+<p class="hint" id="hint">
+  🔎 `2` search panna ella digit 2 highlight + Search Column show aagum | `245` search panna exact number show aagum
+</p>
+
+<div class="results" id="results"></div>
 
 <div class="tablewrap">
-<table>
+<table class="chart">
   <thead>
     <tr class="yr">
       <th class="date" rowspan="2">Date</th>
@@ -118,11 +155,11 @@ body[data-year="26"] th.g25,body[data-year="26"] th.h25,body[data-year="26"] td[
 </table>
 </div>
 
-<!-- Single Digit Editor -->
+<!-- Editor -->
 <div id="editorOverlay">
   <div class="editor">
     <h3 id="editTitle">Edit</h3>
-    <p class="esub">Venuna digit-a mattum change pannunga, keezha andha digit-oda colour-a select pannunga</p>
+    <p class="esub">Single digit edit / colour change pannitu Save pannunga</p>
     <div class="digits">
       <div class="dbox"><label>1st DIGIT</label><input id="d0" maxlength="1" inputmode="numeric"><div class="palette" data-i="0"></div></div>
       <div class="dbox"><label>2nd DIGIT</label><input id="d1" maxlength="1" inputmode="numeric"><div class="palette" data-i="1"></div></div>
@@ -180,49 +217,59 @@ const D=[
 ["374","***","845","***","655","***","597","462","***","867","***","610","477","***","508","***","862","***","727","013","***"]
 ];
 
-/* ---------- Local Storage ---------- */
 const STORAGE_KEY='chartWithSaleemEdits_v1';
-let edits={};
-try{ edits=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ edits={}; }
+const DIGIT_COLOR_KEY='chartWithSaleemDigitColors_v1';
 
-function saveEdits(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(edits)); }catch(e){}
-  updateResetLabel();
-}
-function updateResetLabel(){
-  const n=Object.keys(edits).length;
-  document.getElementById('resetAll').textContent = n ? `🗑 Reset Saved (${n})` : '🗑 Reset Saved';
-}
+let edits={}, digitColors={};
+try{edits=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch(e){edits={}}
+try{digitColors=JSON.parse(localStorage.getItem(DIGIT_COLOR_KEY)||'{}')}catch(e){digitColors={}}
 
-/* ---------- Build Table ---------- */
 const mh=document.getElementById('mh');
 M25.forEach(m=>mh.insertAdjacentHTML('beforeend',`<th class="h25${m==='Dec'?' sep':''}">${m}</th>`));
 M26.forEach(m=>mh.insertAdjacentHTML('beforeend',`<th class="h26">${m}</th>`));
 
+const digitBtns=document.getElementById('digitBtns');
+for(let i=0;i<=9;i++) digitBtns.insertAdjacentHTML('beforeend',`<button data-d="${i}">${i}</button>`);
+digitBtns.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-d]');
+  if(!b)return;
+  q.value=b.dataset.d;
+  doSearch();
+});
+
+function saveEdits(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(edits))}catch(e){} updateResetLabel()}
+function saveDigitColors(){try{localStorage.setItem(DIGIT_COLOR_KEY,JSON.stringify(digitColors))}catch(e){} updateResetLabel()}
+function updateResetLabel(){
+  const n=Object.keys(edits).length+Object.keys(digitColors).length;
+  document.getElementById('resetAll').textContent=n?`🗑 Reset Saved (${n})`:'🗑 Reset Saved';
+}
+
 const tb=document.getElementById('tb');
 let cells=[];
 
+function getOriginal(r,c){return D[r] && D[r][c]!==undefined ? D[r][c] : ''}
 function getCellData(r,c){
   const e=edits[r+'-'+c];
-  if(e) return {v:e.v, c:e.c||[null,null,null], edited:true};
-  return {v:(D[r][c]!==undefined?D[r][c]:''), c:[null,null,null], edited:false};
+  if(e)return{v:e.v,c:e.c||[null,null,null],edited:true};
+  return{v:getOriginal(r,c),c:[null,null,null],edited:false};
 }
 function cellInner(v,colors){
-  if(v==='***'||v==='') return v;
-  return v.split('').map((ch,i)=> colors[i]
-    ? `<span style="color:${colors[i]};font-weight:bold">${ch}</span>`
-    : `<span>${ch}</span>`).join('');
+  if(v===''||v==='***')return v;
+  return v.padStart(3,'0').split('').map((ch,i)=>{
+    const col=colors[i]||digitColors[ch]||'';
+    return `<span class="digit" data-i="${i}" data-d="${ch}" style="${col?'color:'+col+';font-weight:bold':''}">${ch}</span>`;
+  }).join('');
 }
 function buildTable(){
   let h='';
   D.forEach((row,i)=>{
     h+=`<tr><td class="date">${i+1}</td>`;
     for(let j=0;j<22;j++){
-      const {v,c,edited}=getCellData(i,j);
-      const y=j<12?25:26, sep=j===11?' sep':'', ed=edited?' edited':'';
-      if(v==="")        h+=`<td class="empty${sep}" data-y="${y}" data-r="${i}" data-c="${j}"></td>`;
-      else if(v==="***")h+=`<td class="num na${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">***</td>`;
-      else              h+=`<td class="num${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">${cellInner(v,c)}</td>`;
+      const data=getCellData(i,j),v=data.v,c=data.c,edited=data.edited;
+      const y=j<12?25:26,sep=j===11?' sep':'',ed=edited?' edited':'';
+      if(v==="") h+=`<td class="empty${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}"></td>`;
+      else if(v==="***") h+=`<td class="num na${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">***</td>`;
+      else h+=`<td class="num${sep}${ed}" data-y="${y}" data-r="${i}" data-c="${j}">${cellInner(v,c)}</td>`;
     }
     h+='</tr>';
   });
@@ -232,30 +279,138 @@ function buildTable(){
 }
 buildTable();
 
-/* ---------- Search + Highlight ---------- */
-const q=document.getElementById('q'), clr=document.getElementById('clear'), cnt=document.getElementById('count');
-function doSearch(){
-  const raw=q.value.replace(/\D/g,'');
-  clr.style.display=raw?'block':'none';
-  let c=0, first=null;
-  cells.forEach(td=>{
-    td.classList.remove('match');
-    if(!raw) return;
-    const v=td.textContent.trim();
-    if(!v||v==='***') return;
-    if(v===raw.padStart(3,'0')){
-      if(td.offsetParent!==null){ td.classList.add('match'); c++; if(!first) first=td; }
-    }
-  });
-  cnt.textContent = raw ? (c ? c+' found' : 'No match') : '';
-  if(first) setTimeout(()=>first.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),60);
-}
-q.addEventListener('input', doSearch);
-clr.addEventListener('click', ()=>{ q.value=''; doSearch(); q.focus(); });
+const q=document.getElementById('q'),clr=document.getElementById('clear'),cnt=document.getElementById('count');
+const results=document.getElementById('results');
+const digitTools=document.getElementById('digitTools');
+const digitTitle=document.getElementById('digitToolTitle');
+const globalDigitColor=document.getElementById('globalDigitColor');
+let currentDigit=null;
 
-/* Year filter */
+function isVisible(td){return td.offsetParent!==null}
+function monthName(c){return c<12?M25[c]:M26[c-12]}
+function yearName(c){return c<12?'2025':'2026'}
+function clearMarks(){
+  document.querySelectorAll('.matchExact,.matchCell').forEach(x=>x.classList.remove('matchExact','matchCell'));
+  document.querySelectorAll('.digitHit').forEach(x=>x.classList.remove('digitHit'));
+}
+function rowInfo(td,positions=[]){
+  const r=+td.dataset.r,c=+td.dataset.c;
+  return{r,c,date:r+1,year:yearName(c),month:monthName(c),num:td.textContent.trim(),positions};
+}
+function renderResults(title,rows,mode,digit){
+  if(!title){results.classList.remove('show');results.innerHTML='';return}
+  let html=`<h3>${mode==='digit'?'Search Column: '+digit:'Exact Number: '+title}</h3>`;
+  if(!rows.length){
+    html+=`<div style="text-align:center;color:#c0392b;font-weight:bold;padding:8px">No match</div>`;
+  }else{
+    html+=`<div class="rwrap"><table class="rtable"><thead><tr>
+      <th>#</th><th>Date</th><th>Year</th><th>Month</th><th>Number</th>${mode==='digit'?'<th>Digit Place</th>':''}<th>Edit</th>
+    </tr></thead><tbody>`;
+    rows.forEach((x,i)=>{
+      html+=`<tr data-r="${x.r}" data-c="${x.c}" data-pos="${x.positions[0]?x.positions[0]-1:0}">
+        <td>${i+1}</td><td>${x.date}</td><td>${x.year}</td><td>${x.month}</td><td><b>${x.num}</b></td>
+        ${mode==='digit'?`<td>${x.positions.join(', ')}</td>`:''}
+        <td><button class="miniEdit">Edit</button></td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }
+  results.innerHTML=html;
+  results.classList.add('show');
+}
+function showDigitTools(d){
+  currentDigit=d;
+  digitTitle.textContent=`Digit ${d} Permanent Colour`;
+  globalDigitColor.value=digitColors[d]||'#e74c3c';
+  document.getElementById('saveDigitColor').textContent=`💾 Save ${d} Colour`;
+  document.getElementById('clearDigitColor').textContent=`Clear ${d} Colour`;
+  digitTools.classList.add('show');
+}
+function hideDigitTools(){
+  currentDigit=null;
+  digitTools.classList.remove('show');
+}
+function updateQuickButtons(raw){
+  document.querySelectorAll('#digitBtns button').forEach(b=>b.classList.toggle('active',raw.length===1 && b.dataset.d===raw));
+}
+function doSearch(){
+  let raw=q.value.replace(/\D/g,'').slice(0,3);
+  if(q.value!==raw)q.value=raw;
+  clearMarks();
+  clr.style.display=raw?'block':'none';
+  updateQuickButtons(raw);
+
+  if(!raw){
+    cnt.textContent='';
+    renderResults();
+    hideDigitTools();
+    return;
+  }
+
+  let first=null, rows=[];
+  if(raw.length===1){
+    let digitCount=0,cellCount=0;
+    cells.forEach(td=>{
+      if(!isVisible(td))return;
+      let pos=[];
+      td.querySelectorAll('.digit').forEach(sp=>{
+        if(sp.textContent===raw){
+          sp.classList.add('digitHit');
+          pos.push(+sp.dataset.i+1);
+          digitCount++;
+        }
+      });
+      if(pos.length){
+        td.classList.add('matchCell');
+        cellCount++;
+        if(!first)first=td;
+        rows.push(rowInfo(td,pos));
+      }
+    });
+    cnt.textContent=digitCount?`${digitCount} digit / ${cellCount} cell`:'No match';
+    renderResults(raw,rows,'digit',raw);
+    showDigitTools(raw);
+  }else{
+    hideDigitTools();
+    const target=raw.padStart(3,'0');
+    let c=0;
+    cells.forEach(td=>{
+      if(!isVisible(td))return;
+      const v=td.textContent.trim();
+      if(v===target){
+        td.classList.add('matchExact');
+        c++;
+        if(!first)first=td;
+        rows.push(rowInfo(td));
+      }
+    });
+    cnt.textContent=c?`${c} found`:'No match';
+    renderResults(target,rows,'exact');
+  }
+
+  if(first)setTimeout(()=>first.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),60);
+}
+q.addEventListener('input',doSearch);
+clr.addEventListener('click',()=>{q.value='';doSearch();q.focus()});
+
+results.addEventListener('click',e=>{
+  const tr=e.target.closest('tr[data-r]');
+  if(!tr)return;
+  const r=+tr.dataset.r,c=+tr.dataset.c,pos=+tr.dataset.pos||0;
+  if(e.target.closest('.miniEdit')){
+    openEditor(r,c,pos);
+    return;
+  }
+  const td=tb.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+  if(td){
+    td.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+    td.classList.add('flash');
+    setTimeout(()=>td.classList.remove('flash'),950);
+  }
+});
+
 document.querySelectorAll('.ybtns button').forEach(b=>{
-  b.addEventListener('click', ()=>{
+  b.addEventListener('click',()=>{
     document.querySelectorAll('.ybtns button').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
     document.body.dataset.year=b.dataset.y;
@@ -263,136 +418,165 @@ document.querySelectorAll('.ybtns button').forEach(b=>{
   });
 });
 
-/* ---------- Toast ---------- */
+document.getElementById('saveDigitColor').addEventListener('click',()=>{
+  if(currentDigit===null)return;
+  digitColors[currentDigit]=globalDigitColor.value;
+  saveDigitColors();
+  buildTable();
+  doSearch();
+  showToast(`Digit ${currentDigit} colour saved ✓`);
+});
+document.getElementById('clearDigitColor').addEventListener('click',()=>{
+  if(currentDigit===null)return;
+  delete digitColors[currentDigit];
+  saveDigitColors();
+  buildTable();
+  doSearch();
+  showToast(`Digit ${currentDigit} colour cleared ✓`);
+});
+
 let toastTimer;
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-/* ---------- Single Digit Editor ---------- */
+/* Editor */
 const COLORS=["#111111","#e74c3c","#27ae60","#2980b9","#8e44ad","#e67e22","#d81b60"];
-let editMode=false, curR=-1, curC=-1, selColors=[null,null,null];
+let editMode=false,curR=-1,curC=-1,selColors=[null,null,null];
 const overlay=document.getElementById('editorOverlay');
 const inputs=[0,1,2].map(i=>document.getElementById('d'+i));
 
-/* Colour palette buttons create */
 document.querySelectorAll('.palette').forEach(p=>{
   const idx=+p.dataset.i;
   COLORS.forEach(col=>{
     const b=document.createElement('button');
-    b.className='cbtn'; b.style.background=col; b.dataset.color=col; b.type='button';
-    b.addEventListener('click', ()=>{ selColors[idx]=col; syncDigitUI(); });
+    b.type='button';b.className='cbtn';b.style.background=col;b.dataset.color=col;
+    b.addEventListener('click',()=>{selColors[idx]=col;syncDigitUI()});
     p.appendChild(b);
   });
 });
 function syncDigitUI(){
   for(let i=0;i<3;i++){
-    inputs[i].style.color = selColors[i] || '#111';
-    document.querySelectorAll(`.palette[data-i="${i}"] .cbtn`)
-      .forEach(b=>b.classList.toggle('sel', b.dataset.color===selColors[i]));
+    inputs[i].style.color=selColors[i]||'#111';
+    document.querySelectorAll(`.palette[data-i="${i}"] .cbtn`).forEach(b=>{
+      b.classList.toggle('sel',b.dataset.color===selColors[i]);
+    });
   }
 }
-/* Type panna auto next box */
 inputs.forEach((inp,i)=>{
-  inp.addEventListener('input', ()=>{
-    inp.value = inp.value.slice(-1);
-    if(inp.value && i<2) inputs[i+1].focus();
+  inp.addEventListener('input',()=>{
+    inp.value=inp.value.replace(/[^0-9*]/g,'').slice(-1);
+    if(inp.value && i<2)inputs[i+1].focus();
   });
-  inp.addEventListener('keydown', e=>{
-    if(e.key==='Backspace' && !inp.value && i>0) inputs[i-1].focus();
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&!inp.value&&i>0)inputs[i-1].focus();
   });
 });
 
-function openEditor(r,c,focusIdx){
-  curR=r; curC=c;
-  const {v,c:colors}=getCellData(r,c);
-  const month = c<12 ? M25[c]+' 2025' : M26[c-12]+' 2026';
+function openEditor(r,c,focusIdx=0){
+  curR=r;curC=c;
+  const data=getCellData(r,c);
+  const month=c<12?M25[c]+' 2025':M26[c-12]+' 2026';
   document.getElementById('editTitle').textContent=`✏️ Date ${r+1} - ${month}`;
-  const vals = v==='***' ? ['*','*','*'] : (v==='' ? ['','',''] : v.split(''));
-  selColors=[...colors];
-  for(let i=0;i<3;i++) inputs[i].value = vals[i]||'';
+  const vals=data.v==='***'?['*','*','*']:(data.v===''?['','','']:data.v.padStart(3,'0').split(''));
+  selColors=[...(data.c||[null,null,null])];
+  for(let i=0;i<3;i++)inputs[i].value=vals[i]||'';
   syncDigitUI();
   overlay.classList.add('open');
-  setTimeout(()=>{ const f=inputs[focusIdx||0]; f.focus(); f.select(); },80);
+  setTimeout(()=>{inputs[focusIdx].focus();inputs[focusIdx].select()},80);
 }
-function closeEditor(){ overlay.classList.remove('open'); }
+function closeEditor(){overlay.classList.remove('open')}
 
-/* Cell click: Edit Mode na editor, illana search */
-tb.addEventListener('click', e=>{
-  const td=e.target.closest('td');
-  if(!td || td.dataset.r===undefined) return;
+tb.addEventListener('click',e=>{
+  const td=e.target.closest('td[data-r]');
+  if(!td)return;
   if(editMode){
-    const spans=[...td.querySelectorAll('span')];
-    const fi=spans.indexOf(e.target);
-    openEditor(+td.dataset.r, +td.dataset.c, fi<0?0:fi);
+    const sp=e.target.closest('.digit');
+    const fi=sp?+sp.dataset.i:0;
+    openEditor(+td.dataset.r,+td.dataset.c,fi);
     return;
   }
-  if(td.classList.contains('num') && !td.classList.contains('na')){
-    q.value=td.textContent.trim(); doSearch();
+  if(td.classList.contains('num')&&!td.classList.contains('na')){
+    q.value=td.textContent.trim();
+    doSearch();
   }
 });
 
-/* Edit Mode ON/OFF */
-const editToggle=document.getElementById('editToggle'), hint=document.getElementById('hint');
+const editToggle=document.getElementById('editToggle'),hint=document.getElementById('hint');
 const hintNormal=hint.textContent;
-editToggle.addEventListener('click', ()=>{
+editToggle.addEventListener('click',()=>{
   editMode=!editMode;
-  document.body.classList.toggle('edit-on', editMode);
-  editToggle.textContent = editMode ? '✏️ Edit Mode: ON' : '✏️ Edit Mode: OFF';
-  editToggle.classList.toggle('on', editMode);
-  hint.textContent = editMode
-    ? '✏️ Edit Mode ON: Endha cell-a venumnaalum tap pannunga → single digit / colour change panni Save pannunga (orange border = edited cell)'
+  document.body.classList.toggle('edit-on',editMode);
+  editToggle.textContent=editMode?'✏️ Edit Mode: ON':'✏️ Edit Mode: OFF';
+  editToggle.classList.toggle('on',editMode);
+  hint.textContent=editMode
+    ? '✏️ Edit Mode ON: cell tap pannunga → single digit edit / colour change / Save'
     : hintNormal;
 });
 
-/* Editor buttons */
-document.getElementById('makeStarBtn').addEventListener('click', ()=>{
-  inputs.forEach(i=>i.value='*'); selColors=[null,null,null]; syncDigitUI();
+document.getElementById('makeStarBtn').addEventListener('click',()=>{
+  inputs.forEach(i=>i.value='*');
+  selColors=[null,null,null];
+  syncDigitUI();
 });
-document.getElementById('clearColorBtn').addEventListener('click', ()=>{
-  selColors=[null,null,null]; syncDigitUI();
+document.getElementById('clearColorBtn').addEventListener('click',()=>{
+  selColors=[null,null,null];
+  syncDigitUI();
 });
-document.getElementById('resetCellBtn').addEventListener('click', ()=>{
+document.getElementById('resetCellBtn').addEventListener('click',()=>{
   delete edits[curR+'-'+curC];
-  saveEdits(); buildTable(); doSearch(); closeEditor();
+  saveEdits();
+  buildTable();
+  doSearch();
+  closeEditor();
   showToast('Original restore aachu ✓');
 });
-document.getElementById('cancelBtn').addEventListener('click', closeEditor);
-overlay.addEventListener('click', e=>{ if(e.target===overlay) closeEditor(); });
+document.getElementById('cancelBtn').addEventListener('click',closeEditor);
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeEditor()});
 
-document.getElementById('saveBtn').addEventListener('click', ()=>{
+document.getElementById('saveBtn').addEventListener('click',()=>{
   const vals=inputs.map(i=>i.value.trim());
   let newVal;
   if(vals.every(v=>v==='*')){
-    newVal='***'; selColors=[null,null,null];
-  } else if(vals.every(v=>/^\d$/.test(v))){
+    newVal='***';
+    selColors=[null,null,null];
+  }else if(vals.every(v=>/^\d$/.test(v))){
     newVal=vals.join('');
-  } else {
-    alert('Bro, 3 digit-um fill pannunga, illana *** button use pannunga'); return;
+  }else{
+    alert('3 digit-um fill pannunga. Illana *** button use pannunga.');
+    return;
   }
   const key=curR+'-'+curC;
-  const original = D[curR][curC]!==undefined ? D[curR][curC] : '';
-  if(newVal===original && selColors.every(c=>!c)) delete edits[key];
-  else edits[key]={v:newVal, c:[...selColors]};
-  saveEdits();          /* <-- Local Storage save */
-  buildTable(); doSearch(); closeEditor();
+  const original=getOriginal(curR,curC);
+  if(newVal===original && selColors.every(c=>!c))delete edits[key];
+  else edits[key]={v:newVal,c:[...selColors]};
+  saveEdits();
+  buildTable();
+  doSearch();
+  closeEditor();
   showToast('Saved ✓ Local Storage-la save aachu');
 });
 
-/* All saved edits reset */
-document.getElementById('resetAll').addEventListener('click', ()=>{
-  if(!Object.keys(edits).length){ showToast('Saved edit edhuvum illa'); return; }
-  if(!confirm('Save panna ella edit-um delete aagidum. Confirm-a?')) return;
-  edits={};
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  buildTable(); doSearch(); updateResetLabel();
-  showToast('Ella edit-um reset aachu ✓');
+document.getElementById('resetAll').addEventListener('click',()=>{
+  const n=Object.keys(edits).length+Object.keys(digitColors).length;
+  if(!n){showToast('Saved edit edhuvum illa');return}
+  if(!confirm('Saved edits + digit colours ellam delete aagum. Confirm-a?'))return;
+  edits={};digitColors={};
+  try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(DIGIT_COLOR_KEY)}catch(e){}
+  buildTable();
+  doSearch();
+  updateResetLabel();
+  showToast('All saved reset aachu ✓');
 });
 </script>
 </body>
 </html>
 ```
 
+**Use panna:**
+- Search-la `2` type pannunga → **ella digit 2** highlight + **Search Column: 2** list varum.
+- Andha list-la **Edit** press pannunga → number edit/colour edit → **Save**.
+- `Digit 2 Permanent Colour` la colour choose panni save pannina, chart-la irukkura **ella 2 digit** same colour-la save aagum.
